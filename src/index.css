@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+/*className="max-w-4xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row border border-slate-200"*/
+/*Estilização para os link da tag nav*/
+@utility nav-link-custom {
+  /* Estilo base (Mobile) */
+  @apply block text-center py-2 px-2 rounded-xl border border-amber-500 
+         bg-white/5 text-gray-200 text-sm uppercase font-bold 
+         tracking-widest transition-all duration-200;
+  
+  &:active {/*Estilização ao tocar na tela do celular*/
+    @apply scale-95 bg-amber-500 text-black border-amber-500;
+  }
+
+  /* Ajustes para telas maiores (Desktop) */
+  @variant md {
+    @apply bg-transparent border-0 py-2 px-0;
+    
+    &:hover {/*Estilização ao passar o mouse*/
+      @apply text-amber-500;
+    }    
+    &:active {
+      @apply scale-95 bg-transparent text-amber-500;
+    }
+  }
+}
+
+/*Estilização para os link da tag nav - bustítulos*/
+@utility nav-link-subcustom {
+  /* Estilo base (Mobile) */
+  @apply block text-center py-2 px-2 rounded-xl border border-amber-500
+         text-white/80 text-sm uppercase font-bold bg-black w-full mx-auto max-w-[320px];
+  
+  &:active {/*Estilização ao tocar na tela do celular*/
+    @apply scale-95 bg-amber-500 text-black border-amber-500;
+  }
+
+  /* Ajustes para telas maiores (Desktop) */
+  @variant md {
+    @apply bg-transparent border-0 py-2 px-0;
+    
+    &:hover {/*Estilização ao passar o mouse*/
+      @apply text-amber-500;
+    }    
+    &:active {
+      @apply scale-95 bg-transparent text-amber-500;
+    }
+  }
+}
+
+/*Estilização do carrossel*/
+@utility carrossel-custom{
+    @apply
+    p-2 max-w-4xl bg-black rounded-3xl w-full shadow-2xl mx-auto mt-2;
+}
+
+/*ESTILIZAÇÃO GERAL*/
+@utility section-custom{/*SEÇÕES*/
+    @apply
+    flex flex-col items-center text-center 
+    p-6 max-w-4xl bg-black rounded-3xl w-full shadow-2xl mx-auto mt-6 relative;
+}
+@utility h2-fundo-preto{ /*TÍTULOS DAS SEÇÕES*/
+    @apply
+    text-2xl font-bold text-white mb-4 text-center;
+}
+@utility section-conteudo{ /*CONTEÚDO DAS SEÇÕES*/
+    @apply
+    text-gray-100 text-center md:text-center;
+}
+/*Esconder a barra horizontal que aparece por padrão, quando o elemento filho é maior que o elemento pai*/
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE e Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+}
+
