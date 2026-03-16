@@ -1,8 +1,30 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react' // Adicionamos o useEffect aqui
+import { useNavigate } from 'react-router-dom' // Adicionamos o useNavigate aqui
 import { supabase } from '../supabaseClient' // Verifique se o caminho está correto
 import PaginasAuxiliares from '../components/PaginasAuxiliares' // Importe o seu cabeçalho padrão
 
 export default function PaginaFormularioCultos() {
+  
+  const navigate = useNavigate(); 
+  const [verificandoAcesso, setVerificandoAcesso] = useState(true);
+  
+  useEffect(() => {
+    const verificarSessao = async () => {
+      // 1. O Supabase olha no LocalStorage do navegador em busca da Key
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        // 2. Se NÃO achar a chave, manda para o login imediatamente
+        navigate('/painel'); 
+      } else {
+        // 3. Se ACHAR a chave, libera a visualização do formulário
+        setVerificandoAcesso(false);
+      }
+    };
+
+    verificarSessao();
+  }, [navigate]);
+
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     titulo: '',
@@ -35,7 +57,17 @@ export default function PaginaFormularioCultos() {
     }
     setLoading(false)
   }
-
+  
+  if (verificandoAcesso) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-amber-500 font-black animate-pulse uppercase tracking-widest">
+          Verificando Chave de Acesso...
+        </div>
+      </div>
+    );
+  }
+  
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-900">
       {/* 1. SEU CABEÇALHO PADRÃO */}

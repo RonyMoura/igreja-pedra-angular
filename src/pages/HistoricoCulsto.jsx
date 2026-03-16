@@ -60,7 +60,7 @@ export default function HistoricoCultos() {
                 <h3 className="text-xl font-black uppercase mt-2 leading-tight">{culto.titulo}</h3>
                 <p className="text-slate-500 text-sm font-bold mb-3">{new Date(culto.data).toLocaleDateString('pt-BR')}</p>
                 
-                <p className="text-sm mb-4 line-clamp-3 italic text-slate-700">"{culto.descricao}"</p>
+                <p className="text-sm mb-4 line-clamp-3 italic text-slate-700">{culto.descricao}</p>
                 
                 <div className="flex flex-col gap-2">
                     <p className="text-xs font-bold uppercase"><span className="text-amber-600">Preletor:</span> {culto.preletor}</p>

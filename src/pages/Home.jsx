@@ -152,7 +152,7 @@ function Home() {
                   </li>
                   <li className='w-full'>
                     <Link 
-                        to="/formulario_cultos" // APENAS O APELIDO DA ROTA
+                        to="/painel" // APENAS O APELIDO DA ROTA
                         onClick={() => setExibirSubMenu(false)} 
                         className="nav-link-subcustom"
                         >

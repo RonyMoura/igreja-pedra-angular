@@ -10,6 +10,9 @@ import Danca from './pages/danca';
 import Jovens from './pages/Jovens';
 import FormHistoricoCultos from './pages/FormHistoricoCultos';
 import HistoricoCultos from './pages/HistoricoCulsto';
+import { Login } from './pages/Login';
+import PainelAdmin from './pages/PainelAdm';
+
 
 function App() {
   return (
@@ -25,6 +28,8 @@ function App() {
         <Route path="/jovens" element={<Jovens />} />
         <Route path="/formulario_cultos" element={<FormHistoricoCultos />} />
         <Route path="/historico_cultos" element={<HistoricoCultos />} />
+        <Route path="/login2" element={<Login />} />
+        <Route path="/painel" element={<PainelAdmin />} />         
 
       </Routes>
     </Router>
