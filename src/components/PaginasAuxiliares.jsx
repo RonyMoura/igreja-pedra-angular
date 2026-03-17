@@ -47,23 +47,24 @@ export default function PaginasAuxiliares({destino}) {
           </div>
         </div>
 
-        <div>
-          {/* Se tiver na página de login, volta para o painel e não para a home*/}
-          <Link 
-            to={destino || "/"} 
-            className="text-xs font-bold border border-amber-500 px-4 py-2 rounded hover:bg-amber-500 hover:text-black transition-all"
-          >
-            VOLTAR
-          </Link>
+        <div className="flex flex-col sm:flex-row gap-2 mx-2 sm:mx-0">          
           {/* Se usuarioLogado for true, o botão SAIR aparece */}
           {usuarioLogado && (
             <button
               onClick={handleLogout}
-              className="mx-4 text-xs font-bold border border-red-500 text-red-500 px-4 py-2 rounded hover:bg-red-500 hover:text-white transition-all uppercase"
+              className="w-full sm:w-auto text-xs font-black border border-red-600 px-2 py-2 rounded text-red-500 hover:bg-red-600 hover:text-white transition-all uppercase"
             >
               Sair
             </button>
           )}
+
+          {/* Se tiver na página de login, volta para o painel e não para a home*/}
+          <Link 
+            to={destino || "/"} 
+            className="w-full sm:w-auto text-xs font-bold border border-amber-500 px-2 py-2 rounded hover:bg-amber-500 hover:text-black transition-all"
+          >
+            VOLTAR
+          </Link>
         </div>
       </div>
     </header>

@@ -63,14 +63,14 @@ export default function HistoricoCultos() {
                 <p className="text-sm mb-4 line-clamp-3 italic text-slate-700">{culto.descricao}</p>
                 
                 <div className="flex flex-col gap-2">
-                    <p className="text-xs font-bold uppercase"><span className="text-amber-600">Preletor:</span> {culto.preletor}</p>
+                    <p className="text-xs font-bold uppercase"><span className="text-amber-600">Ministrante:</span> {culto.preletor}</p>
                     <a 
                       href={culto.url1} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="bg-black text-white text-center text-xs font-black py-2 rounded hover:bg-amber-500 hover:text-black transition-all uppercase"
                     >
-                      Assitir Gravação
+                      Momentos do culto
                     </a>
                 </div>
               </div>

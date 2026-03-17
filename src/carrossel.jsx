@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 
 
 const Carrossel = () => {
   // Array de dados: Imagem + Link (que você usará no futuro)
   const slides = [
-    { id: 2, img: "/public/encontro-casais.webp", link: "/pagina-1" },
-    { id: 1, img: "/encontro.webp", link: "/pagina-2" },
-    { id: 3, img: "/celula-jesus-salva.webp", link: "/pagina-1" },
-    { id: 4, img: "/oracao.webp", link: "/pagina-3" },
+    { id: 1, img: "/cultoJovens.webp", link: "#" },
+    { id: 2, img: "/cultoDiaMaes.webp", link: "#" },
+    { id: 3, img: "/encontro-casais.webp", link: "#" },
+    { id: 4, img: "/cultosDomingos.webp", link: "/culto" }, //quando finalizar em /culto, uma mensagem será exibida para o usuário
+    { id: 6, img: "/oracao.webp", link: "#" },
+    { id: 8, img: "/public/celulaJS.webp", link: "#" }
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -26,6 +29,18 @@ const Carrossel = () => {
     return () => clearInterval(timer); 
   }, [nextSlide]);
 
+  {/* Verifica se o link é válido ou se é de uma página de culto programado */}
+  const handleNavigation = (e, link) => {
+    e.preventDefault();
+    if (!link || link === "#") {
+      alert("Desculpe-nos, página em desenvolvimento.");
+    } else if (link.startsWith('/culto')) {
+      alert("Venha cultuar conosco, você é nosso convidado!");
+    } else {
+      alert(`Navegando para: ${link}`);
+      }
+  };
+
   return (
     <section className="relative w-full overflow-hidden group">
       {/* Container dos Slides */}
@@ -34,23 +49,18 @@ const Carrossel = () => {
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
         {slides.map((slide) => (
-          <a 
+          <Link 
             key={slide.id} 
-            href={slide.link} 
+            to={slide.link} 
             className="min-w-full block"
-            onClick={(e) => {
-                // Previne o erro de página não encontrada enquanto você não cria as rotas
-                if(slide.link.startsWith('/')) e.preventDefault(); 
-                console.log(`Navegando para: ${slide.link}`);
-            }}
+            onClick={(e) => handleNavigation(e, slide.link)}
           >
             <img 
               src={slide.img} 
               alt={`Slide ${slide.id}`} 
-              //className="w-full h-[300px] md:h-[500px] object-cover"
               className="w-full aspect-[10/9] md:aspect-[21/9] object-contain rounded-2xl" 
             />
-          </a>
+          </Link> // <--- Aqui estava </a>, agora está corrigido para </Link>
         ))}
       </div>
 

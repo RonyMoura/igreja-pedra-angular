@@ -12,6 +12,7 @@ import FormHistoricoCultos from './pages/FormHistoricoCultos';
 import HistoricoCultos from './pages/HistoricoCulsto';
 import { Login } from './pages/Login';
 import PainelAdmin from './pages/PainelAdm';
+import CelulaJesusSalva from './pages/CelulaJesusSalva';
 
 
 function App() {
@@ -29,7 +30,8 @@ function App() {
         <Route path="/formulario_cultos" element={<FormHistoricoCultos />} />
         <Route path="/historico_cultos" element={<HistoricoCultos />} />
         <Route path="/login2" element={<Login />} />
-        <Route path="/painel" element={<PainelAdmin />} />         
+        <Route path="/painel" element={<PainelAdmin />} />
+        <Route path="/celula_js" element={<CelulaJesusSalva />} />         
 
       </Routes>
     </Router>

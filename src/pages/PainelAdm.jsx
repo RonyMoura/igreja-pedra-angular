@@ -91,9 +91,9 @@ export default function PainelAdmin() {
         <div className="mt-12 text-center">
             <button 
                 onClick={() => navigate("/")}
-                className="text-zinc-500 hover:text-amber-500 text-xs font-bold uppercase tracking-widest transition-colors"
+                className="text-zinc-400 border border-amber-600 px-2 py-2 rounded hover:bg-amber-500 hover:border-amber-500 hover:text-black text-xs font-bold uppercase tracking-widest transition-all"
             >
-                ← Voltar para o site público
+                Tela inicial
             </button>
         </div>
       </main>

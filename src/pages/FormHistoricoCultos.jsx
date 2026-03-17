@@ -100,12 +100,12 @@ export default function PaginaFormularioCultos() {
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-xs font-bold uppercase text-amber-600 mb-1">Preletor</label>
+                <label className="block text-xs font-bold uppercase text-amber-600 mb-1">Ministrante(s)</label>
                 <input name="preletor" className="w-full p-3 border-2 border-slate-200 rounded focus:border-amber-500 outline-none" value={formData.preletor} onChange={handleChange} />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-amber-600 mb-1">Link Vídeo (YouTube) *</label>
+                <label className="block text-xs font-bold uppercase text-amber-600 mb-1">Link (Instagram) *</label>
                 <input name="url1" required placeholder="https://..." className="w-full p-3 border-2 border-slate-200 rounded focus:border-amber-500 outline-none" value={formData.url1} onChange={handleChange} />
               </div>
 
