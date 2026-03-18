@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 
 const Carrossel = () => {
@@ -9,8 +9,8 @@ const Carrossel = () => {
     { id: 2, img: "/cultoDiaMaes.webp", link: "#" },
     { id: 3, img: "/encontro-casais.webp", link: "#" },
     { id: 4, img: "/cultosDomingos.webp", link: "/culto" }, //quando finalizar em /culto, uma mensagem será exibida para o usuário
-    { id: 6, img: "/oracao.webp", link: "#" },
-    { id: 8, img: "/public/celulaJS.webp", link: "#" }
+    { id: 5, img: "/oracao.webp", link: "#" },
+    { id: 6, img: "/celulaJS.webp", link: "/celula_js" }
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -29,7 +29,8 @@ const Carrossel = () => {
     return () => clearInterval(timer); 
   }, [nextSlide]);
 
-  {/* Verifica se o link é válido ou se é de uma página de culto programado */}
+  {/* Verifica se o link é válido ou se é de uma página de culto programado */}  
+  const navigate = useNavigate(); //Necessário para vincular o link, pois foi bloqueado pelo preventDefault
   const handleNavigation = (e, link) => {
     e.preventDefault();
     if (!link || link === "#") {
@@ -37,7 +38,7 @@ const Carrossel = () => {
     } else if (link.startsWith('/culto')) {
       alert("Venha cultuar conosco, você é nosso convidado!");
     } else {
-      alert(`Navegando para: ${link}`);
+      navigate(link)
       }
   };
 
