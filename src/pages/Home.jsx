@@ -195,10 +195,10 @@ function Home() {
             <span className="section-conteudo">
               <p>Quintas-feiras: 19h30</p>
               <p>Domingos: 18h30</p>
-              <Link to="/historico_cultos">
-                <button className="mt-8 border-b-4 border-amber-500 rounded-2xl py-2 px-6 font-bold hover:bg-amber-500 hover:text-black transition-all shadow-lg">
-                  Histórico de Cultos
-                </button>
+              {/* O próprio Link funciona como um botão */}
+              <Link className='mt-8 inline-block border-b-4 border-amber-500 rounded-2xl py-2 px-6 font-bold hover:bg-amber-500 hover:text-black transition-all shadow-lg text-center' 
+                to="/historico_cultos">                
+                Histórico de Cultos
               </Link>
             </span>
             
