@@ -27,7 +27,7 @@ function App() {
         <Route path="/louvor" element={<Louvor />} />
         <Route path="/danca" element={<Danca />} />
         <Route path="/jovens" element={<Jovens />} />
-        <Route path="/formulario_cultos" element={<FormHistoricoCultos />} />
+        <Route path="/formulario_cultos/:id?" element={<FormHistoricoCultos />} />
         <Route path="/historico_cultos" element={<HistoricoCultos />} />
         <Route path="/login2" element={<Login />} />
         <Route path="/painel" element={<PainelAdmin />} />

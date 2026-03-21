@@ -1,8 +1,17 @@
+import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
 import PaginasAuxiliares from '../components/PaginasAuxiliares'
 
 export default function HistoricoCultos() {
+  
+  const temChaveDeAcesso = () => {
+  //Verifica se existe chave key no navegador
+  const chaves = Object.keys(localStorage);
+  return chaves.some(chave => chave.startsWith('sb-') && chave.includes('auth-token'));
+  };
+  const podeEditar = temChaveDeAcesso();
+
   const [cultos, setCultos] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -52,7 +61,7 @@ export default function HistoricoCultos() {
         || culto.titulo.toLowerCase().includes(filtroTexto.toLowerCase());
   const correspondeTipo = filtroTipo === 'Todos' || culto.tipo === filtroTipo;
   const anoDoCulto = culto.data ? new Date(culto.data).getFullYear().toString() : "";
-  const correspondeAno = filtroAno === 'Todos' || anoDoCulto === filtroAno;
+  const correspondeAno = filtroAno === 'Todos' || anoDoCulto === filtroAno; 
   
 
   return correspondeTexto && correspondeTipo && correspondeAno;
@@ -110,24 +119,35 @@ export default function HistoricoCultos() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/*{cultos.map((culto) => (*/}
             {cultosFiltrados.map((culto) => (  
-              <div key={culto.id} className="bg-white border-l-8 border-black shadow-lg rounded-r-lg p-5 hover:shadow-2xl transition-all">
-                <span className="text-[10px] font-bold bg-amber-500 px-2 py-1 uppercase">{culto.tipo}</span>
-                <h3 className="text-xl font-black uppercase mt-2 leading-tight">{culto.titulo}</h3>
-                <p className="text-slate-500 text-sm font-bold mb-3">{new Date(culto.data).toLocaleDateString('pt-BR')}</p>
-                
-                <p className="text-sm mb-4 line-clamp-3 italic text-slate-700">{culto.descricao}</p>
-                
-                <div className="flex flex-col gap-2">
-                    <p className="text-xs font-bold uppercase"><span className="text-amber-600">Ministrante:</span> {culto.preletor}</p>
-                    <a 
-                      href={culto.url1} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="bg-black text-white text-center text-xs font-black py-2 rounded hover:bg-amber-500 hover:text-black transition-all uppercase"
-                    >
-                      Momentos do culto
-                    </a>
+              <div key={culto.id} className="h-full flex flex-col justify-between border-l-8 border-black shadow-lg rounded-r-lg p-5 hover:shadow-2xl transition-all">
+                <div className="flex-grow">
+                  <span className="text-[10px] font-bold bg-amber-500 px-2 py-1 uppercase">{culto.tipo}</span>
+                  <h3 className="text-xl font-black uppercase mt-2 leading-tight">{culto.titulo}</h3>
+                  <p className="text-slate-500 text-sm font-bold mb-3">{new Date(culto.data).toLocaleDateString('pt-BR')}</p>
+                  
+                  <p className="text-sm mb-4 line-clamp-3 italic text-slate-700">{culto.descricao}</p>                                     
+                </div>      
+
+                <div className='flex flex-col mt-auto'>
+                  <p className="text-xs font-bold uppercase mb-2"><span className="text-amber-600">Ministrante:</span> {culto.preletor}</p>  
+                  <a 
+                    href={culto.url1} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="bg-black text-white text-center text-xs font-black py-2 rounded hover:bg-amber-500 hover:text-black transition-all uppercase"
+                  >
+                    Momentos do culto
+                  </a>                 
+              
+                  {podeEditar && (
+                    <div className='flex justify-end'>
+                      <Link to={`/formulario_cultos/${culto.id}`} className="botoes py-1 px-2  inline-block mt-2 bg-black text-white text-[10px]">
+                        Editar Culto
+                      </Link>
+                    </div>  
+                  )}
                 </div>
+
               </div>
             ))}
           </div>

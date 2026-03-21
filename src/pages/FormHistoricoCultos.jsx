@@ -2,30 +2,14 @@ import { useState, useEffect } from 'react' // Adicionamos o useEffect aqui
 import { useNavigate } from 'react-router-dom' // Adicionamos o useNavigate aqui
 import { supabase } from '../supabaseClient' // Verifique se o caminho está correto
 import PaginasAuxiliares from '../components/PaginasAuxiliares' // Importe o seu cabeçalho padrão
+import { useParams } from 'react-router-dom'
 
 export default function PaginaFormularioCultos() {
-  
+   
   const navigate = useNavigate(); 
+  const { id } = useParams(); // <-- NOVO: Captura o ID da URL
   const [verificandoAcesso, setVerificandoAcesso] = useState(true);
-  
-  useEffect(() => {
-    const verificarSessao = async () => {
-      // 1. O Supabase olha no LocalStorage do navegador em busca da Key
-      const { data: { session } } = await supabase.auth.getSession();
 
-      if (!session) {
-        // 2. Se NÃO achar a chave, manda para o login imediatamente
-        navigate('/painel'); 
-      } else {
-        // 3. Se ACHAR a chave, libera a visualização do formulário
-        setVerificandoAcesso(false);
-      }
-    };
-
-    verificarSessao();
-  }, [navigate]);
-
-  const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     titulo: '',
     tipo: '',
@@ -34,30 +18,83 @@ export default function PaginaFormularioCultos() {
     url1: '',
     url2: '',
     descricao: ''
-  })
+  });
+
+  useEffect(() => {
+    const verificarSessaoEBuscarDados = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        navigate('/painel'); 
+      } else {
+        // <-- NOVO: Se houver ID na URL, busca os dados do culto
+        if (id) {
+          const { data, error } = await supabase
+            .from('historico_cultos')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+          if (data && !error) {
+            // Preenche o formulário com os dados existentes
+            setFormData({
+              titulo: data.titulo || '',
+              tipo: data.tipo || '',
+              data: data.data || '',
+              preletor: data.preletor || '',
+              url1: data.url1 || '',
+              url2: data.url2 || '',
+              descricao: data.descricao || ''
+            });
+          }
+        }
+        setVerificandoAcesso(false);
+      }
+    };
+
+    verificarSessaoEBuscarDados();
+  }, [navigate, id]); // <-- ADICIONADO: 'id' como dependência
+
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
 
-    const { error } = await supabase
-      .from('historico_cultos')
-      .insert([formData])
+    // <-- ADAPTADO: Escolhe entre UPDATE ou INSERT
+    if (id) {
+      // Modo Edição
+      const { error } = await supabase
+        .from('historico_cultos')
+        .update(formData) // Envia o que foi alterado
+        .eq('id', id);    // Filtra pelo registro específico
 
-    if (error) {
-      alert('Erro: ' + error.message)
+      if (error) {
+        alert('Erro ao atualizar: ' + error.message);
+      } else {
+        navigate('/historico_cultos'); // Volta para a listagem após editar
+      }
     } else {
-      alert('Culto registrado com sucesso!')
-      setFormData({ titulo: '', tipo: '', data: '', preletor: '', url1: '', url2: '', descricao: '' })
+      // Modo Cadastro
+      const { error } = await supabase
+        .from('historico_cultos')
+        .insert([formData]);
+
+      if (error) {
+        alert('Erro ao cadastrar: ' + error.message);
+      } else {
+        alert('Culto registrado com sucesso!');
+        setFormData({ titulo: '', tipo: '', data: '', preletor: '', url1: '', url2: '', descricao: '' });
+      }
     }
-    setLoading(false)
-  }
-  
+    setLoading(false);
+  };
+
   if (verificandoAcesso) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
@@ -119,14 +156,16 @@ export default function PaginaFormularioCultos() {
                 <textarea name="descricao" rows="3" className="w-full p-3 border-2 border-slate-200 rounded focus:border-amber-500 outline-none" value={formData.descricao} onChange={handleChange}></textarea>
               </div>
             </div>
-
+            
             <button 
               type="submit" 
               disabled={loading}
               className="w-full bg-black text-white font-black py-4 rounded shadow-lg hover:bg-amber-500 hover:text-black transition-all uppercase tracking-widest mt-4 disabled:bg-slate-400"
             >
-              {loading ? 'Salvando...' : 'Publicar no Histórico'}
+              {loading ? 'Salvando...' : (id ? 'Salvar Alterações' : 'Publicar no Histórico')}
             </button>
+
+
           </form>
         </div>
       </main>
