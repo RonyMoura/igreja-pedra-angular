@@ -10,29 +10,32 @@ export function Login() {
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+  e.preventDefault();
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
 
-    if (error) {
-      alert('Erro ao entrar: ' + error.message);
-    } else {
-      navigate('/formulario_cultos');
+  if (error) {
+    alert('Erro: ' + error.message);
+  } else {
+    // Pega o destino direto da janela do navegador sem usar Hooks
+    const params = new URLSearchParams(window.location.search);
+    const destino = params.get("redirect") || "/";
+    navigate(destino);
+  }
+};
+
+useEffect(() => {
+  const redirecionarSeLogado = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      const params = new URLSearchParams(window.location.search);
+      const destino = params.get("redirect") || "/";
+      navigate(destino);
     }
   };
+  redirecionarSeLogado();
+  }, [navigate]);
 
-  // Dentro do export function Login() { ...
-  useEffect(() => {
-    const redirecionarSeLogado = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (session) {
-        // Se ele já tem a KEY, manda ele direto pro formulário!
-        navigate('/formulario_cultos') 
-      }
-    }
-    redirecionarSeLogado()
-  }, [navigate])
-
-
+  
   return (
     <div className="min-h-screen bg-zinc-950 text-white font-sans">
       {/* 1. Header Padronizado */}

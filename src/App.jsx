@@ -13,6 +13,7 @@ import HistoricoCultos from './pages/HistoricoCulsto';
 import { Login } from './pages/Login';
 import PainelAdmin from './pages/PainelAdm';
 import CelulaJesusSalva from './pages/CelulaJesusSalva';
+import Tesouraria from './pages/Tesouraria';
 
 
 function App() {
@@ -31,9 +32,9 @@ function App() {
         <Route path="/historico_cultos" element={<HistoricoCultos />} />
         <Route path="/login2" element={<Login />} />
         <Route path="/painel" element={<PainelAdmin />} />
-        <Route path="/celula_js" element={<CelulaJesusSalva />} />         
-
-      </Routes>
+        <Route path="/celula_js" element={<CelulaJesusSalva />} />
+        <Route path="/tesouraria" element={<Tesouraria />} />
+        </Routes>
     </Router>
   );
 }

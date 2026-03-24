@@ -18,13 +18,16 @@ export default function PainelAdmin() {
   // Função mestre para proteger os botões
   const acessarAreaRestrita = async (rota) => {
     const { data: { session } } = await supabase.auth.getSession();
-    
-    if (session) {
-      navigate(rota); // Se estiver logado, vai para a página
-    } else {
-      // Se não estiver logado, manda para o login e avisa (opcional)
-      navigate("/login2"); 
-    }
+      if (rota === '/montar') {
+        alert('Funcionalidades a serem adicionadas')
+      } else{
+        if (session) {
+          navigate(rota); // Se estiver logado, vai para a página
+        } else {
+          // Se não estiver logado, manda para o login e avisa (opcional)
+          navigate(`/login2?redirect=${encodeURIComponent(rota)}`); 
+        }
+      }  
   };
 
   const handleLogout = async () => {
@@ -75,15 +78,28 @@ export default function PainelAdmin() {
 
           {/* Botão: Tesouraria (EM BREVE / PROTEGIDO) */}
           <button 
-            onClick={() => alert("Módulo de Tesouraria em desenvolvimento!")}
-            className="group bg-zinc-900/50 border-2 border-zinc-800/50 p-8 rounded-xl text-left shadow-lg opacity-60 cursor-help"
+            onClick={() => acessarAreaRestrita("/tesouraria")}
+            className="group bg-zinc-900 border-2 border-zinc-800 p-8 rounded-xl hover:border-amber-500 transition-all text-left shadow-lg relative overflow-hidden"
           >
-            <div className="bg-zinc-800 w-12 h-12 rounded-lg flex items-center justify-center mb-4 text-zinc-500">
-              <span className="font-black text-xl">$</span>
+            <div className="bg-amber-500 w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:rotate-12 transition-transform">
+              <span className="text-black font-black text-2xl">$</span>
             </div>
-            <h2 className="text-xl font-bold uppercase mb-2">Tesouraria</h2>
-            <p className="text-zinc-500 text-sm">Gestão financeira, dízimos e ofertas (Bloqueado).</p>
+              <span className="absolute top-4 right-4 text-[10px] text-zinc-600 font-bold uppercase border border-zinc-800 px-2 py-1 rounded">Restrito</span>
+            <h2 className="text-xl font-bold uppercase mb-2 group-hover:text-amber-400 transition-colors">Tesouraria</h2>
+            <p className="text-zinc-400 text-sm leading-relaxed">Gestão financeira, dízimos e ofertas.</p>
           </button>
+
+          {/* Botão: Próximos botões */}
+            <button 
+              onClick={() => acessarAreaRestrita("/montar")}
+              className="group bg-zinc-900/50 border-2 border-zinc-800/50 p-8 rounded-xl text-left shadow-lg opacity-60 cursor-help"
+            >
+              <div className="bg-zinc-800 w-12 h-12 rounded-lg flex items-center justify-center mb-4 text-zinc-500">
+                <span className="font-black text-xl">?</span>
+              </div>
+              <h2 className="text-xl font-bold uppercase mb-2">Próxima ferramenta</h2>
+              <p className="text-zinc-500 text-sm">Funcionalidades que serão inseridas futuramente (Bloqueado).</p>
+            </button>
 
         </div>
 
