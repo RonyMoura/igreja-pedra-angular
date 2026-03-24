@@ -8,13 +8,32 @@ export function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+
 
   const handleLogin = async (e) => {
   e.preventDefault();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    alert('Erro: ' + error.message);
+  let message = "Ocorreu um erro inesperado.";
+
+  // Mapeando os erros mais comuns do Supabase (GoTrue)
+  switch (error.message) {
+    case "Invalid login credentials":
+      message = "E-mail ou senha incorretos.";
+      break;
+    case "Email not confirmed":
+      message = "Você precisa confirmar seu e-mail antes de entrar.";
+      break;
+    case "Invalid format for email":
+      message = "O formato do e-mail é inválido.";
+      break;
+    default:
+      message = error.message; // Caso queira exibir o erro original se não mapeado
+  }
+
+  alert('Erro: ' + message); // Agora exibe a mensagem em PT-BR
   } else {
     // Pega o destino direto da janela do navegador sem usar Hooks
     const params = new URLSearchParams(window.location.search);
@@ -65,17 +84,23 @@ useEffect(() => {
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-widest text-amber-500 mb-2">
-                Senha
-              </label>
+            <div className="relative">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"} // Muda aqui
                 placeholder="••••••••"
                 className="w-full bg-zinc-900 border border-zinc-800 p-3 rounded text-white focus:border-amber-500 outline-none transition-colors"
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+              
+              {/* Botão para alternar (exemplo posicionado à direita) */}
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-3 text-zinc-400 hover:text-black"
+              >
+                {showPassword ? "Esconder" : "Mostrar"}
+              </button>
             </div>
 
             <button
