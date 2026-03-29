@@ -1,7 +1,7 @@
 // src/components/PaginasAuxiliares.jsx
 // Componente para padronizar as páginas auxiliares
 
-import { Link, useNavigate } from "react-router-dom"; /*Trata-se de um link de navegação interna*/
+import { Link, useLocation, useNavigate } from "react-router-dom"; /*Trata-se de um link de navegação interna*/
 import { supabase } from "../supabaseClient"; /* Importamos o cliente do banco para gerenciar a sessão */
 import { useEffect, useState } from "react"; /* Precisamos disso para checar se o usuário está logado ao carregar a página */
 
@@ -25,6 +25,9 @@ export default function PaginasAuxiliares({destino}) {
     navigate("/login2"); // Redireciona o usuário para a página de login imediatamente
     };
 
+    //Identificar a página para mudar o letreiro:
+    const local = useLocation().pathname;
+    
 
   return (
     <header className="bg-black text-white py-4 px-6 border-b-4 border-amber-500 shadow-lg sticky top-0 z-50">
@@ -39,10 +42,10 @@ export default function PaginasAuxiliares({destino}) {
           />
           <div>
             <h1 className="text-xl font-black uppercase tracking-tighter">
-              Igreja Pedra Angular
+              {local !== '/tesouraria' ? "Pedra Angular": 'Tesouraria'}
             </h1>
             <p className="text-amber-400 text-[10px] font-bold tracking-widest uppercase -mt-1">
-              Missão e Reino
+              {local === '/tesouraria'? 'Igreja Pedra Angular':'Missão e Reino'}
             </p>
           </div>
         </div>

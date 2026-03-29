@@ -3,8 +3,10 @@ import {useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import { useSaldos } from "../hooks/useSaldos";
 import PaginasAuxiliares from "../components/PaginasAuxiliares";
+import { UltimasEntradas } from "../components/UltimasEntradas";
 
 export default function Tesouraria() {
+  
  
   const navigate = useNavigate();
   const [carregando, setCarregando] = useState(true);
@@ -204,9 +206,9 @@ export default function Tesouraria() {
   }
     
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
+    <div className="min-h-screen bg-gray-900 text-white flex flex-col font-sans text-slate-900">
       <PaginasAuxiliares />  
-      <div className="mt-8 container mx-auto max-w-4xl">
+      <div className="mt-4 container mx-auto max-w-4xl p-6">
         
         {/* Seção de Saldos */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -250,7 +252,7 @@ export default function Tesouraria() {
 
         {/* Formulário de Entrada (Condicional) */}
         {abaAtiva === 'entrada' && (
-          <div className="bg-zinc-900 border border-green-500 p-6 rounded shadow-2xl animate-in fade-in slide-in-from-top-4">
+          <div className="bg-zinc-900 border border-green-500 p-6 rounded shadow-2xl animate-in fade-in slide-in-from-top-4">            
             <h3 className="text-xl font-black uppercase mb-4 text-green-500">Nova Entrada</h3>
             <form onSubmit={handleSubmit_entrada} className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="flex flex-col">
@@ -296,6 +298,7 @@ export default function Tesouraria() {
                 Confirmar Entrada
               </button>
             </form>
+            <UltimasEntradas />
           </div>
         )}
 

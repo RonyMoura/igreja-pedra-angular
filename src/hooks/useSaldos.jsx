@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../supabaseClient'
+import { subscreverMudancasTesouraria } from '../servicos/RealtimeServico'
 
 export function useSaldos() {
   const [saldos, setSaldos] = useState({ subpix: 0, subEspecie: 0, total: 0 })
@@ -74,43 +75,15 @@ export function useSaldos() {
   }
 
   useEffect(() => {
-    // Assim que carregar a página busca fazer chama a função:
-    calcularSaldos()
-    
-    // inserir um canal para caputar mudanças nas tabelas
-    const canal = supabase
-      .channel('mudancas-tesouraria') // Nome qualquer para o canal
-      // captuar eventos de mudanças da tabela de entradas
-      .on(
-        'postgres_changes', 
-        { event: 'INSERT', schema: 'public', table: 'tesouraria_ent' }, 
-        () => {
-          calcularSaldos() // Se houver um novo INSERT, ele roda a soma de novo
-        }
-      )
-      // captuar eventos de mudanças da tabela de saídas
-      .on(
-        'postgres_changes', 
-        { event: 'INSERT', schema: 'public', table: 'tesouraria_saidas' }, 
-        () => {
-          calcularSaldos() // Se houver um novo INSERT, ele roda a soma de novo
-        }
-      )
-      // captuar eventos de mudanças da tabela de transferência
-      .on(
-        'postgres_changes', 
-        { event: 'INSERT', schema: 'public', table: 'tesouraria_transf' }, 
-        () => {
-          calcularSaldos() // Se houver um novo INSERT, ele roda a soma de novo
-        }
-      )
-      .subscribe()
+    calcularSaldos();
 
-    // Limpeza ao fechar a página (boa prática para não vazar memória)
-    return () => {
-      supabase.removeChannel(canal)
-    }
-  }, [])
+    // Usamos o serviço centralizado
+    const canal = subscreverMudancasTesouraria(() => {
+      calcularSaldos();
+    });
 
-  return saldos // Retorna o objeto com os 3 valores
+    return () => supabase.removeChannel(canal);
+  }, []);
+
+  return saldos;
 }
