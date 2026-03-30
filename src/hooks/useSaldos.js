@@ -79,6 +79,7 @@ export function useSaldos() {
 
     // Usamos o serviço centralizado
     const canal = subscreverMudancasTesouraria(() => {
+      console.log("Valores inseridos ")
       calcularSaldos();
     });
 

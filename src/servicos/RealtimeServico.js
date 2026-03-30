@@ -14,6 +14,7 @@ export const subscreverMudancasTesouraria = (callback) => {
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'tesouraria_saidas' }, callback)
     // Escuta Transferências
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'tesouraria_transf' }, callback)
+    
     .subscribe();
 
   return canal;

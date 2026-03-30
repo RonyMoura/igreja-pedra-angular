@@ -1,7 +1,7 @@
 import { supabase } from '../supabaseClient';
 
 
-const fechDadosTesouraria = async (tableName, limit = 3) => {
+const fechDadosTesouraria = async (tableName, limit = 5) => {
   try {
     const { data, error } = await supabase
       .from(tableName)
@@ -17,6 +17,6 @@ const fechDadosTesouraria = async (tableName, limit = 3) => {
   }
 };
 
-export const getUltimasEntradas = () => fechDadosTesouraria('tesouraria_ent', 5)
-export const getUltimasSaidas = () => fechDadosTesouraria('tesouraria_saidas', 5)
-export const getUltimasTransf = () => fechDadosTesouraria('tesouraria_transf', 5)
+export const getUltimasEntradas = () => fechDadosTesouraria('tesouraria_ent',)
+export const getUltimasSaidas = () => fechDadosTesouraria('tesouraria_saidas',)
+export const getUltimasTransf = () => fechDadosTesouraria('tesouraria_transf', 3)

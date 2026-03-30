@@ -4,6 +4,7 @@ import { supabase } from "../supabaseClient";
 import { useSaldos } from "../hooks/useSaldos";
 import PaginasAuxiliares from "../components/PaginasAuxiliares";
 import { UltimasEntradas } from "../components/UltimasEntradas";
+import { UltimasSaidas } from "../components/UltimasSaidas";
 
 export default function Tesouraria() {
   
@@ -208,7 +209,7 @@ export default function Tesouraria() {
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col font-sans text-slate-900">
       <PaginasAuxiliares />  
-      <div className="mt-4 container mx-auto max-w-4xl p-6">
+      <div className="mt-4 container mx-auto max-w-4xl p-6 md:g">
         
         {/* Seção de Saldos */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -230,144 +231,151 @@ export default function Tesouraria() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <button 
             onClick={() => setAbaAtiva(abaAtiva === 'entrada' ? null : 'entrada')}
-            className={`flex-1 py-3 font-black uppercase tracking-tighter transition-all border-2 ${abaAtiva === 'entrada' ? 'bg-green-600 border-green-400' : 'border-green-600 text-green-500 hover:bg-green-600 hover:text-white'}`}
+            className={`order-1 w-full py-3 font-black uppercase tracking-tighter transition-all border-2 ${abaAtiva === 'entrada' ? 'bg-green-600 border-green-400' : 'border-green-600 text-green-500 hover:bg-green-600 hover:text-white'}`}
           >
             {abaAtiva === 'entrada' ? '✕ Fechar' : 'Inserir Entrada'}
-          </button>
+          </button>        
           
+
+          {/* Formulário de Entrada (Condicional) */}
+            {abaAtiva === 'entrada' && (
+              <div className="order-2 md:order-7 md:col-span-3 bg-zinc-900 border border-green-500 p-6 rounded shadow-2xl animate-in fade-in slide-in-from-top-4">            
+                <h3 className="text-xl font-black uppercase mb-4 text-green-500">Nova Entrada</h3>
+                <form onSubmit={handleSubmit_entrada} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="flex flex-col">
+                    <label className="text-xs font-bold uppercase mb-1">Data</label>
+                    <input
+                      autoFocus 
+                      name="data" 
+                      type="date" 
+                      required 
+                      className="bg-black border border-zinc-700 p-2 rounded focus:border-green-500 outline-none cursor-pointer"
+                      value={formData.data}
+                      onChange={handleChange(setFormData)}
+                      onClick={(e) => e.target.showPicker()}
+                    />
+                  </div>
+                  
+                  <div className="flex flex-col">
+                    <label className="text-xs font-bold uppercase mb-1">Valor Pix</label>
+                    <input 
+                      name="entrada_pix" 
+                      type="text" // Alterado para text para aceitar a vírgula
+                      inputMode="decimal" // Abre teclado numérico no celular
+                      placeholder="R$ 0,00" 
+                      className="bg-black border border-zinc-700 p-2 rounded focus:border-green-500 outline-none"
+                      value={formData.entrada_pix}
+                      onChange={handleChange(setFormData)} 
+                    />
+                  </div>
+
+                  <div className="flex flex-col">
+                    <label className="text-xs font-bold uppercase mb-1">Valor Espécie</label>
+                    <input 
+                      name="entrada_e" 
+                      type="text" // Alterado para text para aceitar a vírgula
+                      inputMode="decimal" // Abre teclado numérico no celular
+                      placeholder="R$ 0,00" 
+                      className="bg-black border border-zinc-700 p-2 rounded focus:border-green-500 outline-none"
+                      value={formData.entrada_e}
+                      onChange={handleChange(setFormData)} 
+                    />
+                  </div>
+
+                  <button type="submit" className="md:col-span-3 bg-green-600 hover:bg-green-500 py-3 mt-2 font-black uppercase transition-colors">
+                    Confirmar Entrada
+                  </button>
+                </form>
+                <UltimasEntradas />
+              </div>
+            )}
+
+
           <button 
             onClick={() => setAbaAtiva(abaAtiva === 'saida' ? null : 'saida')}
-            className={`flex-1 py-3 font-black uppercase tracking-tighter transition-all border-2 ${abaAtiva === 'saida' ? 'bg-red-600 border-red-400' : 'border-red-600 text-red-500 hover:bg-red-600 hover:text-white'}`}
+            className={`order-3 w-full py-3 font-black uppercase tracking-tighter transition-all border-2 ${abaAtiva === 'saida' ? 'bg-red-600 border-red-400' : 'border-red-600 text-red-500 hover:bg-red-600 hover:text-white'}`}
           >
             {abaAtiva === 'saida' ? '✕ Fechar' : 'Inserir Despesa'}
           </button>
 
+
+
+          {/* Placeholder para Formulário de Saída */}
+            {abaAtiva === 'saida' && (
+              <div className="order-4 md:order-7 md:col-span-3 bg-zinc-900 border border-red-500 p-6 rounded shadow-2xl animate-in fade-in slide-in-from-top-4 ">
+                <h3 className="text-xl font-black uppercase mb-4 text-red-500">Nova Despesa</h3>
+                <form onSubmit={handleSubmit_saida} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="flex flex-col">
+                      <label className="text-xs font-bold uppercase mb-1">Data</label>
+                      <input 
+                      name="data" 
+                      type="date" 
+                      required 
+                      className="bg-black border border-zinc-700 p-2 rounded focus:border-red-500 outline-none cursor-pointer"
+                      value={formDataSaida.data}
+                      onChange={handleChange(setFormDataSaida)}
+                      onClick={(e) => e.target.showPicker()} // para abrir o calendário
+                    />
+                    </div>
+
+                    <div className="flex flex-col">
+                      <label className="text-xs font-bold uppercase mb-1">Descrição/finalidade</label>
+                      <input 
+                      name="descricao" 
+                      type="text" 
+                      className="bg-black border border-zinc-700 p-2 rounded focus:border-red-500 outline-none cursor-pointer"
+                      value={formDataSaida.descricao}
+                      onChange={handleChange(setFormDataSaida)}
+                      />
+                    </div>
+
+                    <div className="flex flex-col">
+                      <label className="text-xs font-bold uppercase mb-1">Origem</label>
+                      <select 
+                        className="bg-black border border-zinc-700 p-2 rounded focus:border-red-500 outline-none"
+                        name="origem"
+                        value={formDataSaida.origem}
+                        onChange={handleChange(setFormDataSaida)}
+                      >
+                        <option value="conta">Conta</option>
+                        <option value="especie">Espécie</option>
+                      </select>
+                    </div>
+
+                    <div className="flex flex-col">
+                      <label className="text-xs font-bold uppercase mb-1">Valor</label>
+                      <input 
+                        name="valor" 
+                        type="text" // Alterado para text para aceitar a vírgula
+                        inputMode="decimal" // Abre teclado numérico no celular
+                        placeholder="R$ 0,00" 
+                        className="bg-black border border-zinc-700 p-2 rounded focus:border-red-500 outline-none"
+                        value={formDataSaida.valor}
+                        onChange={handleChange(setFormDataSaida)} 
+                      />
+                    </div>
+
+                    <button type="submit" className="md:col-span-3 bg-red-600 hover:bg-red-500 py-3 mt-2 font-black uppercase transition-colors">
+                    Confirmar Despesa
+                    </button>
+                </form>
+                <UltimasSaidas />
+                </div>
+            )}
+
+
           <button 
             onClick={() => setAbaAtiva(abaAtiva === 'transf' ? null : 'transf')}
-            className={`flex-1 py-3 font-black uppercase tracking-tighter transition-all border-2 ${abaAtiva === 'transf' ? 'bg-amber-600 border-amber-400' : 'border-amber-600 text-amber-500 hover:bg-amber-600 hover:text-black'}`}
+            className={`order-5 w-full py-3 font-black uppercase tracking-tighter transition-all border-2 ${abaAtiva === 'transf' ? 'bg-amber-600 border-amber-400' : 'border-amber-600 text-amber-500 hover:bg-amber-600 hover:text-black'}`}
           >
             {abaAtiva === 'transf' ? '✕ Fechar' : 'Inserir Transferência'}
           </button>
-        </div>
-
-        {/* Formulário de Entrada (Condicional) */}
-        {abaAtiva === 'entrada' && (
-          <div className="bg-zinc-900 border border-green-500 p-6 rounded shadow-2xl animate-in fade-in slide-in-from-top-4">            
-            <h3 className="text-xl font-black uppercase mb-4 text-green-500">Nova Entrada</h3>
-            <form onSubmit={handleSubmit_entrada} className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="flex flex-col">
-                <label className="text-xs font-bold uppercase mb-1">Data</label>
-                <input 
-                  name="data" 
-                  type="date" 
-                  required 
-                  className="bg-black border border-zinc-700 p-2 rounded focus:border-green-500 outline-none cursor-pointer"
-                  value={formData.data}
-                  onChange={handleChange(setFormData)}
-                  onClick={(e) => e.target.showPicker()}
-                />
-              </div>
-              
-              <div className="flex flex-col">
-                <label className="text-xs font-bold uppercase mb-1">Valor Pix</label>
-                <input 
-                  name="entrada_pix" 
-                  type="text" // Alterado para text para aceitar a vírgula
-                  inputMode="decimal" // Abre teclado numérico no celular
-                  placeholder="R$ 0,00" 
-                  className="bg-black border border-zinc-700 p-2 rounded focus:border-green-500 outline-none"
-                  value={formData.entrada_pix}
-                  onChange={handleChange(setFormData)} 
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-xs font-bold uppercase mb-1">Valor Espécie</label>
-                <input 
-                  name="entrada_e" 
-                  type="text" // Alterado para text para aceitar a vírgula
-                  inputMode="decimal" // Abre teclado numérico no celular
-                  placeholder="R$ 0,00" 
-                  className="bg-black border border-zinc-700 p-2 rounded focus:border-green-500 outline-none"
-                  value={formData.entrada_e}
-                  onChange={handleChange(setFormData)} 
-                />
-              </div>
-
-              <button type="submit" className="md:col-span-3 bg-green-600 hover:bg-green-500 py-3 mt-2 font-black uppercase transition-colors">
-                Confirmar Entrada
-              </button>
-            </form>
-            <UltimasEntradas />
-          </div>
-        )}
-
-        {/* Placeholder para Formulário de Saída */}
-        {abaAtiva === 'saida' && (
-          <div className="bg-zinc-900 border border-red-500 p-6 rounded shadow-2xl animate-in fade-in slide-in-from-top-4 ">
-            <h3 className="text-xl font-black uppercase mb-4 text-red-500">Nova Despesa</h3>
-            <form onSubmit={handleSubmit_saida} className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="flex flex-col">
-                  <label className="text-xs font-bold uppercase mb-1">Data</label>
-                  <input 
-                  name="data" 
-                  type="date" 
-                  required 
-                  className="bg-black border border-zinc-700 p-2 rounded focus:border-red-500 outline-none cursor-pointer"
-                  value={formDataSaida.data}
-                  onChange={handleChange(setFormDataSaida)}
-                  onClick={(e) => e.target.showPicker()} // para abrir o calendário
-                />
-                </div>
-
-                <div className="flex flex-col">
-                  <label className="text-xs font-bold uppercase mb-1">Descrição/finalidade</label>
-                  <input 
-                  name="descricao" 
-                  type="text" 
-                  className="bg-black border border-zinc-700 p-2 rounded focus:border-red-500 outline-none cursor-pointer"
-                  value={formDataSaida.descricao}
-                  onChange={handleChange(setFormDataSaida)}
-                  />
-                </div>
-
-                <div className="flex flex-col">
-                  <label className="text-xs font-bold uppercase mb-1">Origem</label>
-                  <select 
-                    className="bg-black border border-zinc-700 p-2 rounded focus:border-red-500 outline-none"
-                    name="origem"
-                    value={formDataSaida.origem}
-                    onChange={handleChange(setFormDataSaida)}
-                  >
-                    <option value="conta">Conta</option>
-                    <option value="especie">Espécie</option>
-                  </select>
-                </div>
-
-                <div className="flex flex-col">
-                  <label className="text-xs font-bold uppercase mb-1">Valor</label>
-                  <input 
-                    name="valor" 
-                    type="text" // Alterado para text para aceitar a vírgula
-                    inputMode="decimal" // Abre teclado numérico no celular
-                    placeholder="R$ 0,00" 
-                    className="bg-black border border-zinc-700 p-2 rounded focus:border-red-500 outline-none"
-                    value={formDataSaida.valor}
-                    onChange={handleChange(setFormDataSaida)} 
-                  />
-                </div>
-
-                <button type="submit" className="md:col-span-3 bg-red-600 hover:bg-red-500 py-3 mt-2 font-black uppercase transition-colors">
-                Confirmar Despesa
-                </button>
-
-            </form>
-          </div>
-        )}
+        </div>   
+        
 
         {/*Formulário para transferência*/}
         {abaAtiva === 'transf' && (
-          <div className="bg-zinc-900 border border-amber-500 p-6 rounded shadow-2xl animate-in fade-in slide-in-from-top-4 ">
+          <div className="order-6 md:order-7 md:col-span-3 bg-zinc-900 border border-amber-500 p-6 rounded shadow-2xl animate-in fade-in slide-in-from-top-4 ">
             <h3 className="text-xl font-black uppercase mb-4 text-amber-500">Nova Transferência</h3>
             <form onSubmit={handleSubmit_transf} className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="flex flex-col">
