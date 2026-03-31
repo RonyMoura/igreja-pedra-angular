@@ -28,12 +28,12 @@ export function UltimasEntradas() {
           return novaLista.slice(0, 5);
         });
       }
-    });
+    },'entradas');
 
     // 3. LIMPEZA (Obrigatório em ADS para não vazar memória)
     return () => {
       supabase.removeChannel(canal);
-    };
+      };
   }, []); // O array vazio garante que isso só rode UMA VEZ ao abrir a página
 
   if (loading) return <p className="text-white">Carregando movimentações...</p>;

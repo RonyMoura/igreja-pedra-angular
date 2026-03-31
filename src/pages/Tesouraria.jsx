@@ -62,7 +62,7 @@ export default function Tesouraria() {
   // --- 3. HOOKS DE DADOS ---
   // O useSaldos deve ser chamado aqui, mas o resultado só será usado se não estiver carregando
   const { subpix, subEspecie, total } = useSaldos();
-
+  
   // --- 4. FUNÇÕES DE MANIPULAÇÃO ---
   const handleChange = (setter) => (e) => {
     const { name, value } = e.target;

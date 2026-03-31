@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../supabaseClient'
 import { subscreverMudancasTesouraria } from '../servicos/RealtimeServico'
 
+
 export function useSaldos() {
   const [saldos, setSaldos] = useState({ subpix: 0, subEspecie: 0, total: 0 })
 
@@ -75,13 +76,15 @@ export function useSaldos() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     calcularSaldos();
 
     // Usamos o serviço centralizado
-    const canal = subscreverMudancasTesouraria(() => {
-      console.log("Valores inseridos ")
+    const canal = subscreverMudancasTesouraria((payload) => {
+      console.log("Identificamos mudanças em uma das tabelas", payload)
       calcularSaldos();
-    });
+      
+    },'saldos');
 
     return () => supabase.removeChannel(canal);
   }, []);
