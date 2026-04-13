@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
 import { getUltimasEntradas } from '../servicos/TesourariaServicos';
-import { subscreverMudancasTesouraria } from '../servicos/RealtimeServico'; // Importe o seu novo serviço
-import { supabase } from '../supabaseClient'; // Necessário para o removeChannel
 
 export function UltimasEntradas() {
   const [entradas, setEntradas] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  
+  
   useEffect(() => {
     // 1. A função que busca o que já existe no banco (O passado)
     async function carregarDados() {
@@ -16,6 +15,11 @@ export function UltimasEntradas() {
     }
 
     carregarDados();
+    
+
+    
+    /*
+
 
     // 2. A implementação da Escuta Realtime (O futuro)
     const canal = subscreverMudancasTesouraria((payload) => {
@@ -34,10 +38,14 @@ export function UltimasEntradas() {
     return () => {
       supabase.removeChannel(canal);
       };
-  }, []); // O array vazio garante que isso só rode UMA VEZ ao abrir a página
 
-  if (loading) return <p className="text-white">Carregando movimentações...</p>;
+  */
+
+      
+  }, []); // O array vazio garante que isso só rode UMA VEZ ao abrir a página
   
+  if (loading) return <p className="text-white">Carregando movimentações...</p>;
+   
   return (
   <div className="overflow-x-auto w-full mt-8">
     <h2 className="mb-2 text-white">Últimas Entradas</h2>
@@ -57,7 +65,7 @@ export function UltimasEntradas() {
           {entradas.map((item) => (
             <tr key={item.id} className="hover:bg-gray-800 transition-colors">
               <td className="px-2 sm:px-4 py-3 sm:py-4 text-gray-200 whitespace-nowrap">                
-                {new Date(item.data).toLocaleDateString('pt-BR', {
+                {new Date(item.data.replace('-', '/')).toLocaleDateString('pt-BR', {
                     day: '2-digit',
                     month: '2-digit',
                     year: '2-digit'

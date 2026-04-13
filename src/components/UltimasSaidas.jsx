@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../supabaseClient';
 import { getUltimasSaidas } from '../servicos/TesourariaServicos';
-import { subscreverMudancasTesouraria } from '../servicos/RealtimeServico';
 
 export function UltimasSaidas() {
   const [saidas, setSaidas] = useState([]);
@@ -15,26 +13,10 @@ export function UltimasSaidas() {
       setLoading(false);
       }
 
-    carregarDados();
+    carregarDados();      
 
-    // 2. A implementação da Escuta Realtime (O futuro)
-    const canal = subscreverMudancasTesouraria((payload) => {
-      
-      if (payload.table === 'tesouraria_saidas' && payload.eventType === 'INSERT') {
-        console.log("Houve nova despesa")
-        setSaidas((listaAtual) => {
-          // Criamos um novo array com o novo item no topo e espalhamos o resto
-          const novaLista = [payload.new, ...listaAtual];
-          return novaLista.slice(0, 3);
-        });
-      }
-    });
-
-    // 3. LIMPEZA (Obrigatório em ADS para não vazar memória)
-    return () => {
-      supabase.removeChannel(canal);
-    };
   }, []); // O array vazio garante que isso só rode UMA VEZ ao abrir a página
+  
 
   if (loading) return <p className="text-white">Carregando movimentações...</p>;
   
@@ -56,7 +38,7 @@ export function UltimasSaidas() {
           {saidas.map((item) => (
             <tr key={item.id} className="hover:bg-gray-800 transition-colors">
               <td className="px-2 sm:px-4 py-3 sm:py-4 text-gray-200 whitespace-nowrap">                
-                {new Date(item.data).toLocaleDateString('pt-BR', {
+                {new Date(item.data.replace('-', '/')).toLocaleDateString('pt-BR', {
                     day: '2-digit',
                     month: '2-digit',
                     year: '2-digit'

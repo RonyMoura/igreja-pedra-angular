@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import {useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
-import { useSaldos } from "../hooks/useSaldos";
+import useSaldos from "../hooks/useSaldos";
 import PaginasAuxiliares from "../components/PaginasAuxiliares";
 import { UltimasEntradas } from "../components/UltimasEntradas";
 import { UltimasSaidas } from "../components/UltimasSaidas";
+import { DetalhesTesouraria } from "../components/DetalhesTesouraria";
 
-export default function Tesouraria() {
-  
+export default function Tesouraria() {  
  
   const navigate = useNavigate();
   const [carregando, setCarregando] = useState(true);
@@ -119,7 +119,6 @@ export default function Tesouraria() {
         alert("⚠️ Pelo menos um valor deve ser informado.")
         return
     }
-
   
   try {
       const { error } = await supabase
@@ -209,7 +208,7 @@ export default function Tesouraria() {
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col font-sans text-slate-900">
       <PaginasAuxiliares />  
-      <div className="mt-4 container mx-auto max-w-4xl p-6 md:g">
+      <div className="mt-4 container justify-center mx-auto max-w-4xl p-6 md:g">
         
         {/* Seção de Saldos */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -299,7 +298,6 @@ export default function Tesouraria() {
           </button>
 
 
-
           {/* Placeholder para Formulário de Saída */}
             {abaAtiva === 'saida' && (
               <div className="order-4 md:order-7 md:col-span-3 bg-zinc-900 border border-red-500 p-6 rounded shadow-2xl animate-in fade-in slide-in-from-top-4 ">
@@ -360,7 +358,7 @@ export default function Tesouraria() {
                     </button>
                 </form>
                 <UltimasSaidas />
-                </div>
+              </div>
             )}
 
 
@@ -437,6 +435,21 @@ export default function Tesouraria() {
             </form>
           </div>
         )}
+
+        <div className="flex flex-col justify-center items-center gap-4 mb-8 mt-8">
+          <button 
+              onClick={() => setAbaAtiva(abaAtiva === 'detalhes' ? null : 'detalhes')}
+              className={`botoes border-white ${abaAtiva === 'detalhes' ? 'bg-white-400 border-white-400' : 'border-white-400 text-white-400 hover:bg-white-400 hover:text-black'}`}
+            >
+              {abaAtiva === 'detalhes' ? '✕ Fechar' : 'Informações detalhadas'}
+          </button>
+        </div>   
+
+            {abaAtiva === 'detalhes' && (
+              <div className="sm:col-span-3 bg-zinc-900 border border-zinc-300 p-6 rounded shadow-2xl animate-in fade-in slide-in-from-top-4 ">
+                <DetalhesTesouraria />
+              </div>
+            )}        
 
       </div>
     </div>
