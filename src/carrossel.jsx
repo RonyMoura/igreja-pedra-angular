@@ -5,20 +5,21 @@ import { Link, useNavigate } from 'react-router-dom';
 const Carrossel = () => {
   // Array de dados: Imagem + Link (que você usará no futuro)
   const slides = [
-    { id: 1, img: "/cultoJovens.webp", link: "#" },
-    { id: 2, img: "/cultoDiaMaes.webp", link: "#" },
+    { img: "/cultoDiaMaes.webp", link: "#" },
     { id: 3, img: "/encontro-casais.webp", link: "#" },
-    { id: 4, img: "/cultosDomingos.webp", link: "/culto" }, //quando finalizar em /culto, uma mensagem será exibida para o usuário
+    { id: 4, img: "/cultosDomingos.webp", link: "/culto" }, //quando finalizar em /culto, uma mensagem personalizada será exibida ao usuário
     { id: 5, img: "/oracao.webp", link: "#" },
     { id: 6, img: "/celulaJS.webp", link: "/celula_js" }
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  //Função para avançar em loop infinito
   const nextSlide = useCallback(() => {
     setCurrentIndex((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
   }, [slides.length]);
 
+  //Função para voltar em loop infinito
   const prevSlide = () => {
     setCurrentIndex((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
   };
