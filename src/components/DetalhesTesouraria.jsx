@@ -42,8 +42,16 @@ export function DetalhesTesouraria() {
 
     //Somar totais:
     const totais = useMemo(() => {
-        if (abaAtiva === 'tesouraria_ent') {            
+        if (abaAtiva === 'tesouraria_ent') {
+                       
             return dados.reduce((acc, item) => {
+                //Se a linha contiver true no desconsiderar, o valor não será somado
+                if (item.desconsiderar === true) {
+                    acc.pix += 0;
+                    acc.especie += 0;
+                    acc.totalSaidas += 0;
+                    return acc;
+                } 
                 acc.pix += (Number(item.entrada_pix) || 0);
                 acc.especie += (Number(item.entrada_e) || 0);
                 acc.totalSaidas += (Number(item.valor) || 0);
@@ -51,6 +59,10 @@ export function DetalhesTesouraria() {
             }, { pix: 0, especie: 0 });
         }else if (abaAtiva === 'tesouraria_saidas'){
             return dados.reduce((acc, item) => {
+
+                if (item?.descricao?.includes("*")) {/*a interrogação é para que o código não quebre, caso o retorno seja uma string vazia*/
+                    return acc;/*não soma, caso na descrição seja encontrado um sinal de asterisco*/
+                }
                 acc.totalSaidas += (Number(item.valor) || 0);
                 return acc;
             }, { totalSaidas: 0});
@@ -145,9 +157,12 @@ export function DetalhesTesouraria() {
                                                 <td className="px-2 sm:px-4 py-3 sm:py-4 text-gray-200 text-right">
                                                     R$ {(item.entrada_e || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                                                 </td>
-                                                <td className="px-2 sm:px-4 py-3 sm:py-4 font-bold text-right text-emerald-300">
+                                                <td className={`px-2 sm:px-4 py-3 sm:py-4 font-bold text-right ${
+                                                    item.desconsiderar ? 'text-amber-600' : 'text-emerald-300'
+                                                }`}>
                                                     R$ {(item.valor_total || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                                                </td>                                            
+                                                    </td>    
+                                                                                     
                                             </tr>
                                         ))}                                    
                                     </tbody>
@@ -189,9 +204,13 @@ export function DetalhesTesouraria() {
                                         <td className="px-2 sm:px-4 py-3 sm:py-4 text-gray-200">
                                             {item.descricao}
                                         </td>
-                                        <td className="px-2 sm:px-4 py-3 sm:py-4 font-bold text-right text-red-500">
+                                        <td className={`px-2 sm:px-4 py-3 sm:py-4 font-bold text-right"
+                                            ${
+                                                item?.descricao?.includes("*") ? 'text-amber-600' : 'text-red-500'
+                                            }`}>
                                             R$ {(item.valor || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                                         </td>
+                                             
                                         </tr>
                                     ))}
                                     </tbody>

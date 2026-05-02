@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 const Carrossel = () => {
   // Array de dados: Imagem + Link (que você usará no futuro)
   const slides = [
-    { img: "/cultoDiaMaes.webp", link: "#" },
+    { id: 1, img: "/cultoDiaMaes.webp", link: "#" },
     { id: 3, img: "/encontro-casais.webp", link: "#" },
     { id: 4, img: "/cultosDomingos.webp", link: "/culto" }, //quando finalizar em /culto, uma mensagem personalizada será exibida ao usuário
     { id: 5, img: "/oracao.webp", link: "#" },

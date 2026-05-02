@@ -6,6 +6,7 @@ import PaginasAuxiliares from "../components/PaginasAuxiliares";
 import { UltimasEntradas } from "../components/UltimasEntradas";
 import { UltimasSaidas } from "../components/UltimasSaidas";
 import { DetalhesTesouraria } from "../components/DetalhesTesouraria";
+import { SkipBack } from "lucide-react";
 
 export default function Tesouraria() {  
  
@@ -16,7 +17,8 @@ export default function Tesouraria() {
   const [formData, setFormData] = useState({
     data: '',
     entrada_pix: '',
-    entrada_e: '0'
+    entrada_e: '0',
+    desconsiderar: 'false'
   });
 
   const [formDataSaida, setFormDataSaida] = useState({
@@ -65,17 +67,18 @@ export default function Tesouraria() {
   
   // --- 4. FUNÇÕES DE MANIPULAÇÃO ---
   const handleChange = (setter) => (e) => {
-    const { name, value } = e.target;
+    const { name, value} = e.target;
+    
     let valorTratado = (name === "entrada_pix" || name === 'entrada_e' || name === "valor" || name === "valor_transf") 
       ? value.replace(',', '.') 
-      : value;
-
+      : value;    
+      
     setter(prev => {
       const novoEstado = {
         ...prev,
         [name]: valorTratado
       };
-
+      
       // Se o usuário mexer na origem, o destino assume o oposto automaticamente
       if (name === 'origem') {
         novoEstado.destino = valorTratado === 'especie' ? 'conta' : 'especie';
@@ -102,6 +105,19 @@ export default function Tesouraria() {
         }
       }
 
+      //checkbox entrada:
+      if (value === "on") {
+        novoEstado.desconsiderar = e.target.checked
+      }      
+      
+      //CHECK SAÍDA:
+      // dentro do objeto novoEstado, a coluna valor é o index 3:
+      const checkbox = Object.keys(novoEstado)[3] === 'valor' && e.target.checked ? true : false
+      
+      if (checkbox) {        
+        novoEstado.descricao += "*";        
+      }
+      
       return novoEstado;
     });
   };   
@@ -126,7 +142,8 @@ export default function Tesouraria() {
         .insert([{ 
           data: formData.data, 
           entrada_pix: formData.entrada_pix, 
-          entrada_e: formData.entrada_e 
+          entrada_e: formData.entrada_e,
+          desconsiderar: formData.desconsiderar 
         }]);
 
       if (error) throw error;
@@ -204,6 +221,12 @@ export default function Tesouraria() {
       </div>
     );
   }
+
+  /*
+  //Valor do checkbox:
+  const selecaoCheck = (valor) => {
+    console.log(valor.target.checked)
+  }*/
     
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col font-sans text-slate-900">
@@ -281,6 +304,14 @@ export default function Tesouraria() {
                     />
                   </div>
 
+                  <div className="checks">
+                    <label className="text-xs font-bold uppercase">Desconsiderar para a soma</label>
+                    <input type="checkbox"
+                    className="w-6 h-6 accent-amber-500 cursor-pointer"
+                    /*onChange={(e) => selecaoCheck(e.target.checked)} - Não é necessário passar uma arrow Function, mas caso tivesse outros valores, sim*/
+                     onChange={handleChange(setFormData)}/>
+                  </div>
+
                   <button type="submit" className="md:col-span-3 bg-green-600 hover:bg-green-500 py-3 mt-2 font-black uppercase transition-colors">
                     Confirmar Entrada
                   </button>
@@ -352,6 +383,14 @@ export default function Tesouraria() {
                         onChange={handleChange(setFormDataSaida)} 
                       />
                     </div>
+
+                    <div className="checks">
+                    <label className="text-xs font-bold uppercase">Desconsiderar para a soma</label>
+                    <input type="checkbox"
+                    className="w-6 h-6 accent-red-500 cursor-pointer"
+                    /*onChange={(e) => selecaoCheck(e.target.checked)} - Não é necessário passar uma arrow Function, mas caso tivesse outros valores, sim*/
+                     onChange={handleChange(setFormDataSaida)} />
+                  </div>
 
                     <button type="submit" className="md:col-span-3 bg-red-600 hover:bg-red-500 py-3 mt-2 font-black uppercase transition-colors">
                     Confirmar Despesa
