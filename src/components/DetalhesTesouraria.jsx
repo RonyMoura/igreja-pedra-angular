@@ -1,14 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
-import { getDadosPorMesAno } from "../servicos/TesourariaServicos";
+import { getDadosPorMesAno, atualizarRegistroSupabase } from "../servicos/TesourariaServicos";
 
 
 export function DetalhesTesouraria() {
  
     const [abaAtiva, setAbaAtiva] = useState('tesouraria_ent');
-    const [dados, setDados] = useState ([]);
+    const [dados, setDados] = useState ([]);// teremos um array de objetos
     const [mesSelecionado, setMesSelecionado] = useState(new Date().getMonth() + 1);{/*O mês já iniciado com o atual */}
     const [anoSelecionado, setAnoSelecionado] = useState(new Date().getFullYear());
-    const [loading, setLoading] = useState(false);    
+    const [loading, setLoading] = useState(false);
+    
+    //Incluir a função de edição de registros:
+    const [edicaoItem, setEdicaoItem] = useState(null);// inicia como falso 
+
 
     //Array de meses:
     const lista_meses = [
@@ -36,9 +40,9 @@ export function DetalhesTesouraria() {
             setDados(dados);
             setLoading(false);
         }        
-          carregarDados()
-
-    }, [mesSelecionado, anoSelecionado, abaAtiva]);
+            carregarDados()                
+         
+    }, [mesSelecionado, anoSelecionado, abaAtiva]);//sempre que houver mudanças nessas variáveis, a função irá rodar
 
     //Somar totais:
     const totais = useMemo(() => {
@@ -73,8 +77,54 @@ export function DetalhesTesouraria() {
             }, { totalTransf: 0});
         }
     }, [dados, abaAtiva]);//importante para capturar as alterações, é como se fosse um usee
-    const totalGeralPeriodo = totais.pix + totais.especie    
+    const totalGeralPeriodo = totais.pix + totais.especie  
+
+
+        //Função para Editar os dados no Supabase:    
+        const handleSalvarEdicao = async (e) => {
+            e.preventDefault(); // Impede o formulário de recarregar a página
+            
+            let dadosParaAtualizar;
+            
+            if (abaAtiva === "tesouraria_ent") {                        
+                dadosParaAtualizar = {
+                data: edicaoItem.data,
+                entrada_pix: edicaoItem.entrada_pix,
+                entrada_e: edicaoItem.entrada_e,
+                desconsiderar: edicaoItem.desconsiderar
+                };
+            } else if (abaAtiva === "tesouraria_saidas") {
+                dadosParaAtualizar = {
+                data: edicaoItem.data,
+                descricao: edicaoItem.descricao,
+                origem: edicaoItem.origem || 'conta',
+                valor: edicaoItem.valor
+                };
+            }
+            
+            // Chama o serviço que criamos, passando o nome da tabela ativa e o ID
+            // (Note que usamos 'abaAtiva' como nome da tabela, já que seu código usa ela no getDadosPorMesAno)
+            const resultado = await atualizarRegistroSupabase(abaAtiva, edicaoItem.id, dadosParaAtualizar);
+            
+            
+            if (resultado.success) {
+                // 4. Se deu certo no banco, atualiza o array de objetos na tela imediatamente
+                setDados(dados.map((linhaOriginal) => 
+                linhaOriginal.id === edicaoItem.id 
+                    ? { ...edicaoItem } 
+                    : linhaOriginal
+                ));
+
+                // 5. Fecha o formulário resetando para null (simplesmente nada)
+                setEdicaoItem(null);
+                alert('Registro atualizado com sucesso!');
+            } else {
+                // Se o serviço retornou falso, avisa o usuário
+                alert('Não foi possível salvar as alterações no Supabase.');
+            }
+        };
     
+
     return(
         <> 
             <div className="md:max-w-full sm:flex flex-row gap-4 items-center mb-4">
@@ -143,7 +193,9 @@ export function DetalhesTesouraria() {
                                     
                                     <tbody className="divide-y divide-gray-800">
                                         {dados.map((item) => (
-                                            <tr key={item.id} className="hover:bg-gray-800 transition-colors">
+                                            <tr key={item.id} className="hover:bg-gray-800 transition-colors select-none" // o select-none não permite a seleção de componentes na tela
+                                            onDoubleClick={() => setEdicaoItem(item)} //Passa o array do item clicado para a variável edicaoItem
+                                            >
                                                 <td className="px-2 sm:px-4 py-3 sm:py-4 text-gray-200 whitespace-nowrap">                
                                                     {new Date(item.data.replace('-', '/')).toLocaleDateString('pt-BR', {
                                                         day: '2-digit',
@@ -192,8 +244,11 @@ export function DetalhesTesouraria() {
                                     </thead>
                                     
                                     <tbody className="divide-y divide-gray-800">
+                                    
                                     {dados.map((item) => (
-                                        <tr key={item.id} className="hover:bg-gray-800 transition-colors">
+                                        <tr key={item.id} className="hover:bg-gray-800 transition-colors select-none"
+                                            onDoubleClick={() => setEdicaoItem(item)}
+                                        >
                                         <td className="px-2 sm:px-4 py-3 sm:py-4 text-gray-200 whitespace-nowrap">                
                                             {new Date(item.data.replace('-', '/')).toLocaleDateString('pt-BR', {
                                                 day: '2-digit',
@@ -259,7 +314,189 @@ export function DetalhesTesouraria() {
                                 </div>
                             </div>
                         </>
+                        
                     )}
+
+                    {/*Formulário para editar itens de entrada: */}    
+                    {edicaoItem && abaAtiva === "tesouraria_ent" && (
+                        <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 animate-fade-in">
+                            
+                            <div className="bg-gray-900 p-6 rounded-lg border border-gray-700 max-w-md w-full text-white shadow-xl">
+                            
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-xl font-bold text-blue-400">Editar Registro #{edicaoItem.id}</h3>
+                                <span className="text-xs text-gray-400">Criado em: {new Date(edicaoItem.created_at).toLocaleDateString()}</span>
+                            </div>
+
+                            {/* Formulário local */}
+                            <form className="flex flex-col gap-4" onSubmit={handleSalvarEdicao}>
+                                
+                                {/* Campo Data */}
+                                <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-1">Data do Registro:</label>
+                                <input 
+                                    type="date" 
+                                    className="w-full p-2.5 rounded bg-gray-800 border border-gray-600 text-white focus:border-blue-500 focus:outline-none"
+                                    value={edicaoItem.data || ''}
+                                    onChange={(e) => setEdicaoItem({ ...edicaoItem, data: e.target.value })}
+                                />
+                                </div>
+
+                                {/* Campo Entrada PIX */}
+                                <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-1">Entrada PIX (R$):</label>
+                                <input 
+                                    type="number" 
+                                    className="w-full p-2.5 rounded bg-gray-800 border border-gray-600 text-white focus:border-blue-500 focus:outline-none"
+                                    value={edicaoItem.entrada_pix ?? 0}
+                                    // Convertemos para número com Number() para manter a tipagem correta do banco
+                                    onChange={(e) => setEdicaoItem({ ...edicaoItem, entrada_pix: Number(e.target.value) })}
+                                />
+                                </div>
+
+                                {/* Campo Entrada Espécie (entrada_e) */}
+                                <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-1">Entrada Espécie (R$):</label>
+                                <input 
+                                    type="number" 
+                                    className="w-full p-2.5 rounded bg-gray-800 border border-gray-600 text-white focus:border-blue-500 focus:outline-none"
+                                    value={edicaoItem.entrada_e ?? 0}
+                                    onChange={(e) => setEdicaoItem({ ...edicaoItem, entrada_e: Number(e.target.value) })}
+                                />
+                                </div>
+
+                                {/* Campo Observação */}
+                                <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-1">Observação:</label>
+                                <textarea 
+                                    className="w-full p-2.5 rounded bg-gray-800 border border-gray-600 text-white focus:border-blue-500 focus:outline-none h-20 resize-none"
+                                    value={edicaoItem.observacao || ''}
+                                    onChange={(e) => setEdicaoItem({ ...edicaoItem, observacao: e.target.value })}
+                                    placeholder="Nenhuma observação informada..."
+                                />
+                                </div>
+
+                                {/* Opção Desconsiderar (Checkbox) */}
+                                <div className="flex items-center gap-2 my-2">
+                                <input 
+                                    type="checkbox" 
+                                    id="desconsiderar"
+                                    className="w-4 h-4 rounded bg-gray-800 border-gray-600 text-blue-600 focus:ring-0 cursor-pointer"
+                                    checked={edicaoItem.desconsiderar || false}
+                                    onChange={(e) => setEdicaoItem({ ...edicaoItem, desconsiderar: e.target.checked })}
+                                />
+                                <label htmlFor="desconsiderar" className="text-sm font-medium text-gray-300 cursor-pointer select-none">
+                                    Desconsiderar este registro no relatório
+                                </label>
+                                </div>
+
+                                {/* Botões de Ação */}
+                                <div className="flex justify-end gap-3 mt-4 border-t border-gray-700 pt-4">
+                                <button 
+                                    type="button" 
+                                    onClick={() => setEdicaoItem(null)} // Limpa o estado e fecha o formulário
+                                    className="px-4 py-2 bg-gray-800 text-gray-300 border border-gray-600 rounded hover:bg-gray-700 text-sm font-medium transition-colors"
+                                >
+                                    Cancelar
+                                </button>
+                                <button 
+                                    type="submit" //considerar o botão como submit para atualizar os dados
+                                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500 text-sm font-medium transition-colors"
+                                >
+                                    Atualizar dados
+                                </button>
+                                </div>
+
+                            </form>
+                            </div>
+                        </div>
+                    )}
+
+                    {/*Formulário para editar itens de saída: */}
+                    {edicaoItem && abaAtiva === "tesouraria_saidas" && (
+                        <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 animate-fade-in">
+                            
+                            <div className="bg-gray-900 p-6 rounded-lg border border-gray-700 max-w-md w-full text-white shadow-xl">
+                            
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-xl font-bold text-red-400">Editar Saída #{edicaoItem.id}</h3>
+                                <span className="text-xs text-gray-400">Criado em: {new Date(edicaoItem.created_at).toLocaleDateString()}</span>
+                            </div>
+
+                            <form className="flex flex-col gap-4" onSubmit={handleSalvarEdicao}>
+                                
+                                {/* Campo Data */}
+                                <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-1">Data da Saída:</label>
+                                <input 
+                                    type="date" 
+                                    className="w-full p-2.5 rounded bg-gray-800 border border-gray-600 text-white focus:border-red-500 focus:outline-none"
+                                    value={edicaoItem.data || ''}
+                                    onChange={(e) => setEdicaoItem({ ...edicaoItem, data: e.target.value })}
+                                    required
+                                />
+                                </div>
+
+                                {/* Campo Descrição */}
+                                <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-1">Descrição / Destino:</label>
+                                <input 
+                                    type="text" 
+                                    className="w-full p-2.5 rounded bg-gray-800 border border-gray-600 text-white focus:border-red-500 focus:outline-none"
+                                    placeholder="Ex: Pagamento de fornecedor, energia, etc."
+                                    value={edicaoItem.descricao || ''}
+                                    onChange={(e) => setEdicaoItem({ ...edicaoItem, descricao: e.target.value })}
+                                    required
+                                />
+                                </div>
+
+                                {/* Campo Origem (Select) */}
+                                <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-1">Origem do Recurso:</label>
+                                <select 
+                                    className="w-full p-2.5 rounded bg-gray-800 border border-gray-600 text-white focus:border-red-500 focus:outline-none cursor-pointer"
+                                    value={edicaoItem.origem || 'conta'}
+                                    onChange={(e) => setEdicaoItem({ ...edicaoItem, origen: e.target.value })} // Ajuste o nome da propriedade se no banco for 'origem' ou 'origen'
+                                >
+                                    <option value="conta">Conta Bancária</option>
+                                    <option value="caixa">Caixa / Espécie</option>
+                                </select>
+                                </div>
+
+                                {/* Campo Valor */}
+                                <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-1">Valor da Saída (R$):</label>
+                                <input 
+                                    type="number" 
+                                    step="0.01" // Permite números decimais (centavos)
+                                    className="w-full p-2.5 rounded bg-gray-800 border border-gray-600 text-white focus:border-red-500 focus:outline-none"
+                                    value={edicaoItem.valor ?? 0}
+                                    onChange={(e) => setEdicaoItem({ ...edicaoItem, valor: Number(e.target.value) })}
+                                    required
+                                />
+                                </div>
+
+                                {/* Botões de Ação */}
+                                <div className="flex justify-end gap-3 mt-4 border-t border-gray-700 pt-4">
+                                <button 
+                                    type="button" 
+                                    onClick={() => setEdicaoItem(null)} // Limpa o estado e fecha o formulário
+                                    className="px-4 py-2 bg-gray-800 text-gray-300 border border-gray-600 rounded hover:bg-gray-700 text-sm font-medium transition-colors"
+                                >
+                                    Cancelar
+                                </button>
+                                <button 
+                                    type="submit" 
+                                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500 text-sm font-medium transition-colors"
+                                >
+                                    Alterar registro
+                                </button>
+                                </div>
+
+                            </form>
+                            </div>
+                        </div>
+                    )}    
                 </>
             )}        
         </>    

@@ -64,3 +64,19 @@ export const getDadosPorMesAno = async (tableName, mes, ano) => {
     return [];
   }
 };
+
+// Função genérica para atualizar qualquer registro em qualquer tabela do Supabase
+export const atualizarRegistroSupabase = async (tableName, id, dadosAtualizados) => {
+  try {
+    const { data, error } = await supabase
+      .from(tableName)
+      .update(dadosAtualizados)
+      .eq('id', id);
+
+    if (error) throw error;
+    return { success: true, data };
+  } catch (error) {
+    console.error(`Erro ao atualizar registro em ${tableName}:`, error.message);
+    return { success: false, error: error.message };
+  }
+};

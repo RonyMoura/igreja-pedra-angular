@@ -12,11 +12,11 @@ export function UltimasEntradas() {
       const dados = await getUltimasEntradas();
       setEntradas(dados);
       setLoading(false);
-    }
+      }
 
-    carregarDados();
+    carregarDados();    
+
     
-
     
     /*
 
